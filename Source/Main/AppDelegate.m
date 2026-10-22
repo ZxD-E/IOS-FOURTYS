@@ -12,14 +12,8 @@
     
     self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
-    
-    [self configureGlobalAppearance];
     NSLog(@"[FourTys Native Boot] Window key & visible state set.");
     return YES;
-}
-
-- (void)configureGlobalAppearance {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
