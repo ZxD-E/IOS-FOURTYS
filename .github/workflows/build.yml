@@ -16,7 +16,7 @@ jobs:
       run: |
         mkdir -p Payload/FourTysLauncher.app
         
-        # Kompilasi kode native menjadi Biner Mach-O ARM64 asli
+        # Kompilasi file native utama yang sudah ada
         clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
               -arch arm64 \
               -miphoneos-version-min=14.0 \
@@ -25,9 +25,7 @@ jobs:
               Source/Main/main.m \
               Source/Main/AppDelegate.m \
               Source/UI/FourTysMainViewController.m \
-              Source/UI/ServerStatusCardView.m \
               Source/Core/SAProtocolHandler.mm \
-              Source/Core/NetworkEngine.mm \
               Source/Engine/MemoryManager.cpp \
               -o Payload/FourTysLauncher.app/FourTysLauncher
 
