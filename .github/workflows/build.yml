@@ -1,0 +1,44 @@
+name: Build FourTys iOS IPA
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Compile Objective-C & C++ Code via Clang
+      run: |
+        mkdir -p Payload/FourTysLauncher.app
+        
+        # Kompilasi kode native menjadi Biner Mach-O ARM64 asli
+        clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+              -arch arm64 \
+              -miphoneos-version-min=14.0 \
+              -fobjc-arc \
+              -framework UIKit -framework Foundation \
+              Source/Main/main.m \
+              Source/Main/AppDelegate.m \
+              Source/UI/FourTysMainViewController.m \
+              Source/UI/ServerStatusCardView.m \
+              Source/Core/SAProtocolHandler.mm \
+              Source/Core/NetworkEngine.mm \
+              Source/Engine/MemoryManager.cpp \
+              -o Payload/FourTysLauncher.app/FourTysLauncher
+
+        # Copy Info.plist ke dalam app bundle
+        cp Source/Main/Info.plist Payload/FourTysLauncher.app/Info.plist
+
+        # Buat IPA zip
+        zip -r FourTysLauncher_Native.ipa Payload
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: FourTysLauncher-IPA
+        path: FourTysLauncher_Native.ipa
