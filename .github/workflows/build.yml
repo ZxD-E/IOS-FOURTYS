@@ -38,7 +38,7 @@ jobs:
         zip -r FourTysLauncher_Native.ipa Payload
 
     - name: Upload IPA Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: FourTysLauncher-IPA
         path: FourTysLauncher_Native.ipa
