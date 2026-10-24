@@ -1,42 +1,29 @@
-name: Build FourTys iOS IPA
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Compile Objective-C & C++ Code via Clang
-      run: |
-        mkdir -p Payload/FourTysLauncher.app
-        
-        # Kompilasi file native utama yang sudah ada
-        clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
-              -arch arm64 \
-              -miphoneos-version-min=14.0 \
-              -fobjc-arc \
-              -framework UIKit -framework Foundation \
-              Source/Main/main.m \
-              Source/Main/AppDelegate.m \
-              Source/UI/FourTysMainViewController.m \
-              Source/Core/SAProtocolHandler.mm \
-              Source/Engine/MemoryManager.cpp \
-              -o Payload/FourTysLauncher.app/FourTysLauncher
-
-        # Copy Info.plist ke dalam app bundle
-        cp Source/Main/Info.plist Payload/FourTysLauncher.app/Info.plist
-
-        # Buat IPA zip
-        zip -r FourTysLauncher_Native.ipa Payload
-
-    - name: Upload IPA Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: FourTysLauncher-IPA
-        path: FourTysLauncher_Native.ipa
+name: FourTysLauncher
+options:
+  bundleIdPrefix: com.fourtys
+  deploymentTarget:
+    iOS: "18.7.10"
+targets:
+  FourTysLauncher:
+    type: application
+    platform: iOS
+    sources:
+      - path: Source
+        excludes:
+          - Main/Info.plist
+    dependencies:
+      - sdk: QuartzCore.framework
+    info:
+      path: Source/Main/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fourtys.roleplay.client
+        PRODUCT_NAME: FourTysLauncher
+        INFOPLIST_FILE: Source/Main/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CLANG_ENABLE_OBJC_ARC: YES
+        CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+        CLANG_CXX_LIBRARY: libc++
+        OTHER_LDFLAGS: "$(inherited) -lc++"
+        IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
